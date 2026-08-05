@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人博客管理系统</title>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+<script>
+(function () {
+  var key = 'blog_theme';
+  function apply(t) { document.documentElement.setAttribute('data-theme', t); }
+  function current() {
+    var m = localStorage.getItem(key);
+    if (m === 'light' || m === 'dark') return m;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  var q = new URLSearchParams(location.search).get('theme');
+  apply(q === 'dark' || q === 'light' ? q : current());
+  window.__setTheme = function (t) {
+    localStorage.setItem(key, t);
+    apply(t);
+    var b = document.getElementById('themeToggle');
+    if (b) b.textContent = t === 'dark' ? '☀' : '🌙';
+  };
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+      if (!localStorage.getItem(key)) apply(e.matches ? 'dark' : 'light');
+    });
+  }
+})();
+</script>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-box">博</div>
+            <span>个人博客管理系统</span>
+        </div>
+        <nav class="nav" id="nav">
+            <div class="nav-item active" data-section="dashboard"><span>仪表盘</span></div>
+            <div class="nav-item" data-section="articles"><span>文章管理</span></div>
+            <div class="nav-item" data-section="categories"><span>分类管理</span></div>
+            <div class="nav-item" data-section="comments"><span>留言管理</span></div>
+            <div class="nav-item" data-section="users"><span>用户管理</span></div>
+            <div class="nav-item" data-section="dicts"><span>数据字典</span></div>
+            <div class="nav-item" data-section="logs"><span>系统日志</span></div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="nav-item" id="navPassword"><span>修改密码</span></div>
+            <div class="nav-item" id="navLogout"><span>退出登录</span></div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <h2 id="pageTitle">仪表盘</h2>
+            <div class="topbar-right"><div class="topbar-user" id="topbarUser"></div><button id="themeToggle" class="theme-toggle" title="切换主题" onclick="var d=document.documentElement.getAttribute('data-theme');__setTheme(d==='dark'?'light':'dark')">🌙</button></div>
+        </div>
+        <div class="content">
+            <!-- 仪表盘 -->
+            <section id="section-dashboard" class="section">
+                <div class="stats-grid" id="statCards"></div>
+                <div class="card">
+                    <div class="card-title">热门文章 TOP 6</div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>标题</th><th>分类</th><th>浏览量</th><th>点赞</th><th>发布时间</th></tr></thead>
+                            <tbody id="hotTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 文章管理 -->
+            <section id="section-articles" class="section" style="display:none">
+                <div class="card">
+                    <div class="toolbar">
+                        <input type="text" class="search-input" id="articleKeyword" placeholder="按标题/摘要搜索">
+                        <select id="articleCategoryFilter"><option value="">全部分类</option></select>
+                        <select id="articleStatusFilter">
+                            <option value="">全部状态</option>
+                            <option value="1">已发布</option>
+                            <option value="0">草稿</option>
+                        </select>
+                        <button class="btn btn-primary" id="articleSearchBtn">查询</button>
+                        <div class="spacer"></div>
+                        <button class="btn btn-primary" onclick="openArticleModal()">＋ 新增文章</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr>
+                                <th>封面</th><th>标题</th><th>分类</th><th>状态</th><th>置顶</th>
+                                <th>浏览量</th><th>发布时间</th><th style="width:220px">操作</th>
+                            </tr></thead>
+                            <tbody id="articleTable"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="articlePagination"></div>
+                </div>
+            </section>
+
+            <!-- 分类管理 -->
+            <section id="section-categories" class="section" style="display:none">
+                <div class="card">
+                    <div class="toolbar">
+                        <input type="text" class="search-input" id="categoryKeyword" placeholder="按分类名称搜索">
+                        <button class="btn btn-primary" id="categorySearchBtn">查询</button>
+                        <div class="spacer"></div>
+                        <button class="btn btn-primary" onclick="openCategoryModal()">＋ 新增分类</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>ID</th><th>分类名称</th><th>排序</th><th>状态</th><th>备注</th><th>创建时间</th><th style="width:140px">操作</th></tr></thead>
+                            <tbody id="categoryTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 留言管理 -->
+            <section id="section-comments" class="section" style="display:none">
+                <div class="card">
+                    <div class="toolbar">
+                        <input type="text" class="search-input" id="commentKeyword" placeholder="按留言内容/昵称搜索">
+                        <select id="commentStatusFilter">
+                            <option value="">全部状态</option>
+                            <option value="0">待审核</option>
+                            <option value="1">已通过</option>
+                            <option value="2">已拒绝</option>
+                        </select>
+                        <button class="btn btn-primary" id="commentSearchBtn">查询</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>用户</th><th>关联文章</th><th>留言内容</th><th>状态</th><th>管理员回复</th><th>留言时间</th><th style="width:220px">操作</th></tr></thead>
+                            <tbody id="commentTable"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="commentPagination"></div>
+                </div>
+            </section>
+
+            <!-- 用户管理 -->
+            <section id="section-users" class="section" style="display:none">
+                <div class="card">
+                    <div class="toolbar">
+                        <input type="text" class="search-input" id="userKeyword" placeholder="按昵称/OpenID搜索">
+                        <button class="btn btn-primary" id="userSearchBtn">查询</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>ID</th><th>头像</th><th>昵称</th><th>OpenID</th><th>状态</th><th>注册时间</th><th>最近登录</th><th style="width:110px">操作</th></tr></thead>
+                            <tbody id="userTable"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="userPagination"></div>
+                </div>
+            </section>
+
+            <!-- 数据字典 -->
+            <section id="section-dicts" class="section" style="display:none">
+                <div class="card">
+                    <div class="toolbar">
+                        <select id="dictTypeFilter">
+                            <option value="">全部类型</option>
+                            <option value="article_status">article_status</option>
+                            <option value="comment_status">comment_status</option>
+                            <option value="is_top">is_top</option>
+                        </select>
+                        <button class="btn btn-primary" id="dictSearchBtn">查询</button>
+                        <div class="spacer"></div>
+                        <button class="btn btn-primary" onclick="openDictModal()">＋ 新增字典</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>ID</th><th>字典类型</th><th>字典名称</th><th>字典值</th><th>排序</th><th>状态</th><th>备注</th><th style="width:140px">操作</th></tr></thead>
+                            <tbody id="dictTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 系统日志 -->
+            <section id="section-logs" class="section" style="display:none">
+                <div class="card">
+                    <div class="toolbar">
+                        <span style="color:#6b7280">接口访问日志（访问即记录）</span>
+                        <div class="spacer"></div>
+                        <button class="btn btn-danger" id="clearLogBtn">清空日志</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>ID</th><th>方法</th><th>请求路径</th><th>IP</th><th>耗时(ms)</th><th>访问时间</th></tr></thead>
+                            <tbody id="logTable"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="logPagination"></div>
+                </div>
+            </section>
+
+            <!-- 修改密码 -->
+            <section id="section-password" class="section" style="display:none">
+                <div class="card" style="max-width:480px">
+                    <div class="card-title">修改后台登录密码</div>
+                    <div class="form-item"><label>旧密码</label><input type="password" id="oldPassword"></div>
+                    <div class="form-item"><label>新密码（至少6位）</label><input type="password" id="newPassword"></div>
+                    <div class="form-item"><label>确认新密码</label><input type="password" id="confirmPassword"></div>
+                    <button class="btn btn-primary" id="changePasswordBtn">保存修改</button>
+                    <div style="margin-top:28px;border-top:1px solid var(--border);padding-top:20px">
+                        <div class="card-title">绑定微信登录</div>
+                        <p style="color:var(--text-2);font-size:13px;margin-bottom:12px">生成绑定码后，用微信打开小程序「个人博客」→ 我的 → 管理员 · 微信确认 → 点「确认验证码」，输入绑定码即可。</p>
+                        <div id="wxBindStatus" class="wx-bind-status">正在检测绑定状态...</div>
+                        <div style="display:flex;gap:10px;margin-top:10px">
+                            <button class="btn btn-primary" onclick="bindWx()">生成绑定码</button>
+                            <button class="btn btn-danger" onclick="unbindWx()">解绑微信</button>
+                        </div>
+                        <div id="wxBindBox" class="wx-bind-box" style="display:none"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<!-- 文章弹窗 -->
+<div class="modal-mask" id="articleModal">
+    <div class="modal">
+        <div class="modal-title" id="articleModalTitle">新增文章</div>
+        <input type="hidden" id="articleId">
+        <div class="form-row">
+            <div class="form-item"><label>文章标题 *</label><input type="text" id="articleTitle" maxlength="200"></div>
+            <div class="form-item"><label>文章分类 *</label><select id="articleCategory"></select></div>
+        </div>
+        <div class="form-row">
+            <div class="form-item"><label>发布状态</label>
+                <select id="articleStatus"><option value="1">已发布</option><option value="0">草稿</option></select>
+            </div>
+            <div class="form-item"><label>是否置顶</label>
+                <select id="articleTop"><option value="0">否</option><option value="1">是</option></select>
+            </div>
+        </div>
+        <div class="form-item"><label>文章摘要</label><textarea id="articleSummary" rows="2" maxlength="300"></textarea></div>
+        <div class="form-item">
+            <label>封面图片</label>
+            <div style="display:flex;gap:10px;align-items:center">
+                <input type="text" id="articleCover" placeholder="封面URL，留空则小程序端显示渐变占位图">
+                <button class="btn btn-sm" onclick="document.getElementById('coverFile').click()">上传</button>
+                <input type="file" id="coverFile" accept="image/*" style="display:none">
+            <img id="articleCoverPreview" class="cover-preview" alt="" style="display:none">
+            </div>
+        </div>
+        <div class="form-item">
+            <label>正文内容（支持 HTML 富文本）</label>
+            <div class="editor-toolbar">
+                <button class="btn" onclick="insertTag('h2','','')">H2</button>
+                <button class="btn" onclick="insertTag('h3','','')">H3</button>
+                <button class="btn" onclick="insertTag('strong','','')">加粗</button>
+                <button class="btn" onclick="insertTag('em','','')">斜体</button>
+                <button class="btn" onclick="insertTag('ul','\n<li>项目</li>','\n')">列表</button>
+                <button class="btn" onclick="insertTag('blockquote','','')">引用</button>
+                <button class="btn" onclick="insertTag('code','','')">行内代码</button>
+                <button class="btn" onclick="insertTag('pre','<code class=\"language-java\">\n','\n</code>')">代码块</button>
+                <button class="btn" onclick="insertImage()">插入图片</button>
+                <button class="btn" onclick="insertTag('a href=\"https://\"','','')">链接</button>
+            </div>
+            <textarea id="articleContent" rows="14" placeholder="支持 HTML 标签，小程序端将渲染为富文本"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="closeModal('articleModal')">取消</button>
+            <button class="btn btn-primary" onclick="saveArticle()">保存文章</button>
+        </div>
+    </div>
+</div>
+
+<!-- 分类弹窗 -->
+<div class="modal-mask" id="categoryModal">
+    <div class="modal modal-sm">
+        <div class="modal-title" id="categoryModalTitle">新增分类</div>
+        <input type="hidden" id="categoryId">
+        <div class="form-item"><label>分类名称 *</label><input type="text" id="categoryName" maxlength="50"></div>
+        <div class="form-row">
+            <div class="form-item"><label>排序（越小越靠前）</label><input type="number" id="categorySort" value="0"></div>
+            <div class="form-item"><label>状态</label><select id="categoryStatus"><option value="1">启用</option><option value="0">停用</option></select></div>
+        </div>
+        <div class="form-item"><label>备注</label><input type="text" id="categoryRemark" maxlength="200"></div>
+        <div class="modal-footer">
+            <button class="btn" onclick="closeModal('categoryModal')">取消</button>
+            <button class="btn btn-primary" onclick="saveCategory()">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- 字典弹窗 -->
+<div class="modal-mask" id="dictModal">
+    <div class="modal modal-sm">
+        <div class="modal-title" id="dictModalTitle">新增字典</div>
+        <input type="hidden" id="dictId">
+        <div class="form-item"><label>字典类型 *</label>
+            <select id="dictType"><option>article_status</option><option>comment_status</option><option>is_top</option><option value="__custom__">自定义</option></select>
+            <input type="text" id="dictTypeCustom" placeholder="自定义类型名称" style="display:none;margin-top:8px">
+        </div>
+        <div class="form-row">
+            <div class="form-item"><label>字典名称 *</label><input type="text" id="dictLabel" maxlength="50"></div>
+            <div class="form-item"><label>字典值 *</label><input type="text" id="dictValue" maxlength="50"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-item"><label>排序</label><input type="number" id="dictSort" value="0"></div>
+            <div class="form-item"><label>状态</label><select id="dictStatus"><option value="1">启用</option><option value="0">停用</option></select></div>
+        </div>
+        <div class="form-item"><label>备注</label><input type="text" id="dictRemark" maxlength="200"></div>
+        <div class="modal-footer">
+            <button class="btn" onclick="closeModal('dictModal')">取消</button>
+            <button class="btn btn-primary" onclick="saveDict()">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- 回复弹窗 -->
+<div class="modal-mask" id="replyModal">
+    <div class="modal modal-sm">
+        <div class="modal-title">回复留言</div>
+        <div class="form-item"><label>回复内容 *</label><textarea id="replyContent" rows="4"></textarea></div>
+        <div class="modal-footer">
+            <button class="btn" onclick="closeModal('replyModal')">取消</button>
+            <button class="btn btn-primary" onclick="submitReply()">发送回复</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="/admin/js/api.js"></script>
+<script src="/admin/js/index.js"></script>
+</body>
+</html>

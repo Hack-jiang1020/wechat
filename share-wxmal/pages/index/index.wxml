@@ -1,0 +1,58 @@
+<view class="app {{themeClass}} page">
+  <!-- 顶部搜索 -->
+  <view class="search-bar">
+    <view class="search-box">
+      <text class="search-icon">⌕</text>
+      <input class="search-input" placeholder="搜索文章标题 / 摘要" confirm-type="search"
+             value="{{keyword}}" bindinput="onSearchInput" bindconfirm="onSearch"/>
+      <text wx:if="{{keyword}}" class="search-clear" bindtap="onClearSearch">×</text>
+    </view>
+    <view class="search-btn" bindtap="onSearch">搜索</view>
+  </view>
+
+  <!-- 分类导航 -->
+  <scroll-view class="category-bar" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="category-list">
+      <view class="category-item {{activeCategory === 0 ? 'active' : ''}}" bindtap="onCategoryTap" data-id="0">全部</view>
+      <view wx:for="{{categories}}" wx:key="id"
+            class="category-item {{activeCategory === item.id ? 'active' : ''}}"
+            bindtap="onCategoryTap" data-id="{{item.id}}">{{item.name}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 文章列表 -->
+  <view class="article-list" wx:if="{{articles.length > 0}}">
+    <view class="article-card" wx:for="{{articles}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+      <image wx:if="{{item.cover}}" class="article-cover" src="{{item.cover}}" mode="aspectFill"/>
+      <view wx:else class="article-cover article-cover-placeholder">
+        <text class="cover-char">{{item.coverChar}}</text>
+      </view>
+      <view class="article-body">
+        <view class="article-title-row">
+          <text class="article-title">{{item.title}}</text>
+          <text wx:if="{{item.isTop === 1}}" class="top-tag">置顶</text>
+        </view>
+        <view class="article-summary">{{item.summary || '暂无摘要'}}</view>
+        <view class="article-meta">
+          <text wx:if="{{item.categoryName}}" class="category-tag">{{item.categoryName}}</text>
+          <text class="meta-item">{{formatTime(item.createTime)}}</text>
+          <text class="meta-item">{{formatViews(item.views)}} 阅读</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{initialized && articles.length === 0}}" class="empty-box">
+    <text class="empty-icon">📭</text>
+    <text class="empty-text">还没有文章，去后台发布第一篇吧</text>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="load-state" wx:if="{{loading}}">
+    <text class="loading-dot"></text><text>加载中...</text>
+  </view>
+  <view class="load-state" wx:if="{{finished && articles.length > 0}}">
+    <text>— 已经到底啦 —</text>
+  </view>
+</view>

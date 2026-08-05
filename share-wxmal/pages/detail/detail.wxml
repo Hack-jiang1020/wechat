@@ -1,0 +1,22 @@
+<view class="app {{themeClass}} detail-page">
+  <!-- 文章内容 -->
+  <view class="article-box" wx:if="{{article}}">
+    <view class="article-head">
+      <view class="article-tags">
+        <text wx:if="{{article.isTop === 1}}" class="top-badge">置顶</text>
+        <text wx:if="{{article.categoryName}}" class="cat-badge">{{article.categoryName}}</text>
+      </view>
+      <text class="article-title">{{article.title}}</text>
+      <view class="article-meta">
+        <text>{{formatTime(article.createTime)}}</text>
+        <text>{{article.views}} 阅读</text>
+        <text wx:if="{{article.likes}}">{{article.likes}} 点赞</text>
+      </view>
+    </view>
+    <view class="article-content">
+      <rich-text nodes="{{htmlNodes}}"></rich-text>
+    </view>
+  </view>
+
+  <view wx:if="{{!loaded}}" class="app {{themeClass}} detail-loading">加载中...</view>
+</view>

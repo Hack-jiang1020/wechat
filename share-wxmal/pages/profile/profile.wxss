@@ -1,0 +1,120 @@
+.profile-page {
+  padding: 40rpx 32rpx calc(60rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+/* 博主卡片 */
+.author-card {
+  display: flex;
+  align-items: center;
+  background: var(--card);
+  border-radius: 12rpx;
+  padding: 40rpx 32rpx;
+  margin-bottom: 24rpx;
+}
+.author-avatar {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 48rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.author-info {
+  margin-left: 28rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.author-name {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--text);
+}
+.author-desc {
+  font-size: 24rpx;
+  color: var(--text-2);
+}
+
+/* 统计卡片 */
+.stats-card {
+  display: flex;
+  background: var(--card);
+  border-radius: 12rpx;
+  padding: 32rpx 0;
+  margin-bottom: 24rpx;
+}
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+.stat-num {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--brand);
+}
+.stat-label {
+  font-size: 22rpx;
+  color: var(--text-3);
+}
+
+/* 设置与关于卡片 */
+.settings-card,
+.about-card {
+  background: var(--card);
+  border-radius: 12rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+.settings-title {
+  font-size: 26rpx;
+  color: var(--text-2);
+  margin-bottom: 24rpx;
+}
+.theme-options {
+  display: flex;
+  gap: 16rpx;
+}
+.theme-option {
+  flex: 1;
+  text-align: center;
+  padding: 18rpx 0;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  color: var(--text-2);
+  background: var(--bg-soft);
+  border: 1rpx solid var(--border);
+}
+.theme-option.active {
+  color: #fff;
+  background: var(--brand);
+  border-color: var(--brand);
+}
+.about-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18rpx 0;
+  font-size: 26rpx;
+}
+.about-row text:first-child {
+  color: var(--text-2);
+}
+.about-row text:last-child {
+  color: var(--text);
+}
+
+.footer-text {
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--text-3);
+  margin-top: 48rpx;
+}

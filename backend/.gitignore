@@ -1,0 +1,7 @@
+target/
+uploads/
+*.log
+data/
+.idea/
+*.iml
+*.err

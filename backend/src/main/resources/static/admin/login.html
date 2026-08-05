@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员登录 - 个人博客微信小程序系统</title>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+<script>
+(function () {
+  var key = 'blog_theme';
+  function apply(t) { document.documentElement.setAttribute('data-theme', t); }
+  function current() {
+    var m = localStorage.getItem(key);
+    if (m === 'light' || m === 'dark') return m;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  var q = new URLSearchParams(location.search).get('theme');
+  apply(q === 'dark' || q === 'light' ? q : current());
+  window.__setTheme = function (t) {
+    localStorage.setItem(key, t);
+    apply(t);
+    var b = document.getElementById('themeToggle');
+    if (b) b.textContent = t === 'dark' ? '☀' : '🌙';
+  };
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+      if (!localStorage.getItem(key)) apply(e.matches ? 'dark' : 'light');
+    });
+  }
+})();
+</script>
+</head>
+<body class="login-body">
+<button id="themeToggle" class="theme-toggle" title="切换主题" onclick="var d=document.documentElement.getAttribute('data-theme');__setTheme(d==='dark'?'light':'dark')">🌙</button>
+<div class="login-wrap">
+    <div class="login-card">
+        <div class="login-logo">博</div>
+        <h1 class="login-title">个人博客管理系统</h1>
+        <p class="login-sub">Personal Blog Admin</p>
+        <div class="login-tabs">
+            <button type="button" class="login-tab active" id="tabPwd" onclick="switchLoginTab('pwd')">密码登录</button>
+            <button type="button" class="login-tab" id="tabWx" onclick="switchLoginTab('wx')">微信登录</button>
+        </div>
+        <form id="loginForm" autocomplete="off">
+            <div class="form-item">
+                <label>用户名</label>
+                <input id="username" type="text" placeholder="请输入管理员账号" required>
+            </div>
+            <div class="form-item">
+                <label>密码</label>
+                <input id="password" type="password" placeholder="请输入登录密码" required>
+            </div>
+            <div id="loginError" class="login-error"></div>
+            <button type="submit" id="loginBtn" class="btn btn-primary btn-block">登 录</button>
+        </form>
+        <div id="wxPanel" class="wx-panel" style="display:none">
+            <img id="wxQr" class="wx-qr" alt="" style="display:none">
+            <div class="wx-code" id="wxCode">------</div>
+            <p class="wx-hint" id="wxHint">正在生成登录二维码...</p>
+            <div id="wxStatus" class="wx-status">正在生成验证码...</div>
+            <button type="button" class="btn btn-primary btn-block" onclick="newWxCode()">重新生成验证码</button>
+        </div>
+        <p class="login-tip" id="pwdTip">默认账号：admin　密码：admin123（首次登录后请及时修改）</p>
+        <p class="login-tip wx-tip" id="wxTip" style="display:none">首次使用：先用密码登录，在「修改密码」页点“绑定微信”，再用小程序确认即可</p>
+    </div>
+</div>
+<script src="/admin/js/api.js"></script>
+<script src="/admin/js/login.js"></script>
+</body>
+</html>

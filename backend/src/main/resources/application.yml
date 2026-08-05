@@ -1,0 +1,53 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: blog-miniapp
+  datasource:
+    url: jdbc:h2:mem:blogdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  web:
+    resources:
+      cache:
+        period: 0
+        cachecontrol:
+          no-cache: true
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 50MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+blog:
+  upload-dir: ./uploads
+  admin:
+    username: admin
+    password: admin123
+  token-expire-hours: 168
+  wechat:
+    # 微信小程序 AppID / AppSecret（微信公众平台 -> 开发管理 -> 开发设置）
+    # 留空时使用本地开发兜底登录（不会真正校验微信身份），上线前必须填写
+    appid: "wx23ad1bc9fe81c726"
+    secret: ""
+
+
+logging:
+  level:
+    root: info

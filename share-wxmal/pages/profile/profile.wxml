@@ -1,0 +1,46 @@
+<view class="app {{themeClass}} profile-page">
+  <!-- 博主卡片 -->
+  <view class="author-card">
+    <view class="author-avatar">博</view>
+    <view class="author-info">
+      <text class="author-name">个人博客</text>
+      <text class="author-desc">记录与分享 · 知识归档 · 在线阅读</text>
+    </view>
+  </view>
+
+  <!-- 文章统计 -->
+  <view class="stats-card">
+    <view class="stat-item">
+      <text class="stat-num">{{articleTotal}}</text>
+      <text class="stat-label">文章总数</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-num">H2</text>
+      <text class="stat-label">轻量存储</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-num">MDX</text>
+      <text class="stat-label">富文本渲染</text>
+    </view>
+  </view>
+
+  <!-- 外观设置 -->
+  <view class="settings-card">
+    <view class="settings-title">外观</view>
+    <view class="theme-options">
+      <view class="theme-option {{themeMode === 'system' ? 'active' : ''}}" data-mode="system" bindtap="selectTheme">跟随系统</view>
+      <view class="theme-option {{themeMode === 'light' ? 'active' : ''}}" data-mode="light" bindtap="selectTheme">浅色</view>
+      <view class="theme-option {{themeMode === 'dark' ? 'active' : ''}}" data-mode="dark" bindtap="selectTheme">深色</view>
+    </view>
+  </view>
+
+  <!-- 关于 -->
+  <view class="about-card">
+    <view class="about-row"><text>系统名称</text><text>个人博客微信小程序</text></view>
+    <view class="about-row"><text>当前版本</text><text>v1.0.0</text></view>
+    <view class="about-row"><text>内容发布</text><text>网页管理后台</text></view>
+    <view class="about-row"><text>数据存储</text><text>H2 轻量数据库</text></view>
+  </view>
+
+  <view class="footer-text">内容仅供个人学习与知识归档</view>
+</view>

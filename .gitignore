@@ -1,0 +1,10 @@
+# 微信开发者工具本地私有配置
+project.private.config.json
+
+# IDE
+.idea/
+*.iml
+
+# 系统文件
+.DS_Store
+Thumbs.db
