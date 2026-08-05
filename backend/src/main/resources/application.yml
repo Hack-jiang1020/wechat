@@ -43,9 +43,12 @@ blog:
   token-expire-hours: 168
   wechat:
     # 微信小程序 AppID / AppSecret（微信公众平台 -> 开发管理 -> 开发设置）
-    # 留空时使用本地开发兜底登录（不会真正校验微信身份），上线前必须填写
-    appid: "wx23ad1bc9fe81c726"
-    secret: ""
+    # 通过环境变量注入，不要把真实值写死在配置文件里：
+    #   Windows(PowerShell): $env:BLOG_WECHAT_APPID="你的AppID"; $env:BLOG_WECHAT_SECRET="你的AppSecret"
+    #   Linux/Mac: export BLOG_WECHAT_APPID="你的AppID"; export BLOG_WECHAT_SECRET="你的AppSecret"
+    # 留空时使用本地开发兜底登录（不会真正校验微信身份），上线前必须设置环境变量
+    appid: "${BLOG_WECHAT_APPID:}"
+    secret: "${BLOG_WECHAT_SECRET:}"
 
 
 logging:

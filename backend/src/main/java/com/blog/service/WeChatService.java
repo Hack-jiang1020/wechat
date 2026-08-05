@@ -20,8 +20,8 @@ import java.util.Map;
 
 /**
  * 微信小程序服务
- * 正式环境：配置 appid/secret 后自动启用真实校验与小程序码生成
- * 开发环境：留空配置时走本地兜底登录，方便无凭据联调
+ * 正式环境：通过环境变量 BLOG_WECHAT_APPID / BLOG_WECHAT_SECRET 注入后自动启用真实校验与小程序码生成
+ * 开发环境：未设置环境变量时走本地兜底登录，方便无凭据联调
  */
 @Service
 public class WeChatService {

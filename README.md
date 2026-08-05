@@ -177,20 +177,20 @@ H2 为内存模式时，删除项目后重启即恢复默认账号 `admin/admin1
 1. **静默登录**：小程序端 `wx.login()` 获取临时 code → 后端调用微信接口 `sns/jscode2session` 换取真实 `openid`（同一微信用户在不同小程序下 openid 稳定唯一）
 2. **头像昵称**：使用官方「头像昵称填写能力」——`<button open-type="chooseAvatar">` 选择头像 + `<input type="nickname">` 填写昵称（旧版 `wx.getUserProfile` 已被微信废弃，不再使用）
 3. **上线前配置**：
-   - 在 `backend/src/main/resources/application.yml` 的 `blog.wechat.appid / blog.wechat.secret` 填入小程序 AppID 与 AppSecret（微信公众平台 → 开发管理 → 开发设置）
+   - 设置环境变量 `BLOG_WECHAT_APPID`（小程序 AppID）与 `BLOG_WECHAT_SECRET`（AppSecret，微信公众平台 → 开发管理 → 开发设置）；配置文件通过占位符 `${BLOG_WECHAT_APPID:}` / `${BLOG_WECHAT_SECRET:}` 读取，不要把真实值写死在配置文件里
    - 在小程序后台「开发管理 → 服务器域名」配置 request 合法域名（指向你部署的后端 HTTPS 域名）
    - 正式发布环境要求后端为 HTTPS
-4. **开发兜底**：未配置 appid/secret 时，后端以 code 模拟 openid 完成登录，仅用于本地联调；上线前不配置会无法通过微信身份校验（返回“微信登录校验失败”）
+4. **开发兜底**：未设置上述环境变量时，后端以 code 模拟 openid 完成登录，仅用于本地联调；上线前不配置会无法通过微信身份校验（返回“微信登录校验失败”）
 ## 十一、管理员绑定微信 / 强制登录 / 文章封面
 
 1. **管理员绑定微信**：后台密码登录 → 「修改密码」页 → 点「生成绑定码」；用微信打开小程序「个人博客」→ 我的 → 管理员 · 微信确认 → 输入绑定码 → 「绑定到管理员账号」。
 2. **扫码登录后台**：后台登录页选「微信登录」，配置了微信凭据时会生成小程序码，用绑定过管理员的微信扫码直达「管理员微信确认」页并自动带出验证码，点「确认登录后台」即登录；未配置凭据时自动降级为 6 位验证码模式。
 3. **微信授权登录（进入小程序）**：小程序取消访客模式与自动登录，首页/详情/个人中心均设登录门禁；用户点击「微信授权登录」→ 点击授权头像（官方 chooseAvatar）→ 填写昵称 → 一键登录后进入。
 3. **文章封面**：后台文章编辑弹窗支持封面上传（实时预览）；小程序首页列表卡片展示封面，未设置封面时显示浅灰占位块。
-## 十二、上线发布清单（AppID: wx23ad1bc9fe81c726）
+## 十二、上线发布清单
 
 1. **后端部署**：准备一台服务器（Linux/Windows 均可），安装 JDK 8+；`mvn clean package -DskipTests` 后 `java -jar target/blog-miniapp.jar` 运行；建议用 Nginx 把 `https://你的域名` 反向代理到 8080 端口（需 ICP 备案域名 + HTTPS 证书）。
-2. **填写微信凭据**：在 `application.yml` 填入 `blog.wechat.appid`（已填）和 `blog.wechat.secret`（微信公众平台 → 开发管理 → 开发设置 → AppSecret，只显示一次，自己保管）。
+2. **设置微信凭据**：部署前设置环境变量 `BLOG_WECHAT_APPID` 与 `BLOG_WECHAT_SECRET`（AppSecret 在微信公众平台 → 开发管理 → 开发设置 只显示一次，自己保管，不要写进配置文件或代码仓库）。
 3. **小程序后台域名配置**（mp.weixin.qq.com → 开发管理 → 开发设置 → 服务器域名）：
    - request 合法域名：`https://你的域名`
    - uploadFile 合法域名：`https://你的域名`（用户头像上传）
